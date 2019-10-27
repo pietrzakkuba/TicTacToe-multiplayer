@@ -15,6 +15,14 @@
 #define SERVER_PORT 1234
 #define QUEUE_SIZE 10
 
+void handleConnection(int connection_socket_descriptor)
+{
+    // dummy server
+    char buf[20];
+    read(connection_socket_descriptor, buf, sizeof(buf));
+    printf("buf: %s\n", buf);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -53,6 +61,24 @@ int main(int argc, char *argv[])
         perror("Setting up socket to listen failed");
         exit(-1);
     }
+
+    // infinite loop - waiting for clients
+    int connection_socket_descriptor;
+    while (1)
+    {
+        // waiting for client to enter
+        connection_socket_descriptor = accept(server_socket_descriptor, NULL, NULL);
+        if (connection_socket_descriptor < 0)
+        {
+            perror("Setting up socket to listen failed");
+            exit(-1);
+        }
+        // handling connection
+        handleConnection(connection_socket_descriptor);
+    }
+
+    // closing socket
+    close(server_socket_descriptor);
 
     return 0;
 }
