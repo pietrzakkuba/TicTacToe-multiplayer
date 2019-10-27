@@ -15,14 +15,6 @@
 #define SERVER_PORT 1234
 #define QUEUE_SIZE 10
 
-void handleConnection(int connection_socket_descriptor)
-{
-    // dummy server
-    char buf[20];
-    read(connection_socket_descriptor, buf, sizeof(buf));
-    printf("buf: %s\n", buf);
-}
-
 int main(int argc, char *argv[])
 {
 
@@ -63,18 +55,30 @@ int main(int argc, char *argv[])
     }
 
     // infinite loop - waiting for clients
-    int connection_socket_descriptor;
+    int connection_socket_descriptor[2];
+    int game_id = 0;
     while (1)
     {
-        // waiting for client to enter
-        connection_socket_descriptor = accept(server_socket_descriptor, NULL, NULL);
-        if (connection_socket_descriptor < 0)
+        // pthread_t game;
+        // waiting for client 1 to enter
+        connection_socket_descriptor[0] = accept(server_socket_descriptor, NULL, NULL);
+        if (connection_socket_descriptor[0] < 0)
         {
             perror("Setting up socket to listen failed");
             exit(-1);
         }
+        printf("First player has joined!\n");
+        // waiting for client 2 to enter
+        connection_socket_descriptor[1] = accept(server_socket_descriptor, NULL, NULL);
+        if (connection_socket_descriptor[1] < 0)
+        {
+            perror("Setting up socket to listen failed");
+            exit(-1);
+        }
+        printf("Second player has joined!\n");
+        game_id++;
         // handling connection
-        handleConnection(connection_socket_descriptor);
+        printf("Game ID:%d\nCSD1: %d\nCSD2: %d\n", game_id, connection_socket_descriptor[0], connection_socket_descriptor[1]);
     }
 
     // closing socket
