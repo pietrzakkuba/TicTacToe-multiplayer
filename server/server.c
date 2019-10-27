@@ -1,0 +1,58 @@
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <pthread.h>
+
+#define SERVER_PORT 1234
+#define QUEUE_SIZE 10
+
+int main(int argc, char *argv[])
+{
+
+    // initializating new socket
+    struct sockaddr_in server_address;
+    memset(&server_address, 0, sizeof(struct sockaddr));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+    server_address.sin_port = htons(SERVER_PORT);
+
+    // creating new socket (domain, type, 0 )
+    int server_socket_descriptor;
+    server_socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (server_socket_descriptor < 0)
+    {
+        perror("Creating new socket failed");
+        exit(-1);
+    }
+
+    // binding name to the socket
+    int bind_result;
+    bind_result = bind(server_socket_descriptor, (struct sockaddr *)&server_address, sizeof(struct sockaddr));
+
+    if (bind_result < 0)
+    {
+        perror("Binding socket failed");
+        exit(-1);
+    }
+
+    // preparing socket to support connections and configurating a queue
+    int listen_result;
+    listen_result = listen(server_socket_descriptor, QUEUE_SIZE);
+    if (listen_result < 0)
+    {
+        perror("Setting up socket to listen failed");
+        exit(-1);
+    }
+
+    return 0;
+}
