@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#include "tournament.h"
+
 #define SERVER_PORT 1234
 #define QUEUE_SIZE 10
 
@@ -25,7 +27,8 @@ struct game_thread_args
 void *handlingConnection(void *game_args)
 {
     struct game_thread_args *ids = (struct game_thread_args *)game_args;
-    printf("Game ID: %d\tConnection Socket Descriptors: %d %d\n", ids->game_id, ids->connection_socket_descriptor_1, ids->connection_socket_descriptor_2);
+    // printf("Game ID: %d\tConnection Socket Descriptors: %d %d\n", ids->game_id, ids->connection_socket_descriptor_1, ids->connection_socket_descriptor_2);
+    tournament(ids->game_id, ids->connection_socket_descriptor_1, ids->connection_socket_descriptor_2);
     pthread_exit(NULL);
     return EXIT_SUCCESS;
 }

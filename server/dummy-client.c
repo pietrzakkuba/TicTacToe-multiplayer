@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #define SERVER_PORT 1234
 

@@ -1,2 +1,4 @@
 # .x - exec
 *.x
+# .vscode folder
+.vscode/
