@@ -15,6 +15,19 @@
 #define SERVER_PORT 1234
 #define QUEUE_SIZE 10
 
+
+struct game_thread_args {
+    int connection_socket_descriptor_1;
+    int connection_socket_descriptor_2;
+};
+
+void *handlingConnection(void *game_args)
+{
+    printf("Hello Thread!\n");
+    pthread_exit(NULL);
+    return EXIT_SUCCESS;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -56,10 +69,12 @@ int main(int argc, char *argv[])
 
     // infinite loop - waiting for clients
     int connection_socket_descriptor[2];
+    int game_thread_result;
     int game_id = 0;
     while (1)
     {
-        // pthread_t game;
+        game_id++;
+        printf("Game ID: %d\t Game initialized\n", game_id);
         // waiting for client 1 to enter
         connection_socket_descriptor[0] = accept(server_socket_descriptor, NULL, NULL);
         if (connection_socket_descriptor[0] < 0)
@@ -67,7 +82,7 @@ int main(int argc, char *argv[])
             perror("Setting up socket to listen failed");
             exit(-1);
         }
-        printf("First player has joined!\n");
+        printf("Game ID: %d\t First player has joined!\t player's CSD: %d\n", game_id, connection_socket_descriptor[0]);
         // waiting for client 2 to enter
         connection_socket_descriptor[1] = accept(server_socket_descriptor, NULL, NULL);
         if (connection_socket_descriptor[1] < 0)
@@ -75,10 +90,23 @@ int main(int argc, char *argv[])
             perror("Setting up socket to listen failed");
             exit(-1);
         }
-        printf("Second player has joined!\n");
-        game_id++;
-        // handling connection
-        printf("Game ID:%d\nCSD1: %d\nCSD2: %d\n", game_id, connection_socket_descriptor[0], connection_socket_descriptor[1]);
+        //setting up a game
+        printf("Game ID: %d\t Second player has joined!\t player's CSD: %d\n", game_id, connection_socket_descriptor[1]);
+        write(connection_socket_descriptor[0], "Second player ready!", sizeof("Second player ready!"));
+        write(connection_socket_descriptor[1], "Second player ready!", sizeof("Second player ready!"));
+
+        //creating a game thread
+        pthread_t game_thread;
+        struct game_thread_args game_args;
+        game_args.connection_socket_descriptor_1 = connection_socket_descriptor[0];
+        game_args.connection_socket_descriptor_2 = connection_socket_descriptor[1];
+        game_thread_result = pthread_create(&game_thread, NULL, handlingConnection, (void *)&game_args);
+        if (game_thread_result < 0)
+        {
+            perror("Creating a game thread failed");
+            exit(-1);
+        }
+        pthread_detach(game_thread);    
     }
 
     // closing socket

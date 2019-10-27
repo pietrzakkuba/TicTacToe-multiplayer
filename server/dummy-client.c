@@ -1,3 +1,4 @@
+// this client is here only because of server's development, won't be a part of final product
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
@@ -27,7 +28,11 @@ int main(int argc, char *argv[])
     inet_pton(AF_INET, "127.0.0.1", &(server_address.sin_addr));
 
     connect(connection_socket_descriptor, (struct sockaddr *)&server_address, sizeof(struct sockaddr));
-    
+    printf("Waiting for the second player\n");
+    char buf[40];
+    read(connection_socket_descriptor, buf, sizeof(buf));
+    printf("%s\n", buf);
+
     close(connection_socket_descriptor);
     return 0;
 }
