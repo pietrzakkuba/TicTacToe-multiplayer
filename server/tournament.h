@@ -13,39 +13,62 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-//void managing a game
+// void managing a game
 void tournament(int game_id, int player_1, int player_2)
 {
-    printf("Game ID: %d\tConnection Socket Descriptors: %d %d\n", game_id, player_1, player_2);
-    int space_number;
     // each space has its number, shown below
-    // |1|2|3|
-    // |4|5|6|
-    // |7|8|9|
-    //player_1 is X, player_2 is O, X always goes first
+    // |01|02|03|
+    // |04|05|06|
+    // |07|08|09|
+    // additional numbers 11 - your turn, 12 - opponents turn
+    // player_1 is X, player_2 is O, X always goes first
+    char massage_to_player_1[3];
+    char massage_to_player_2[3];
+    char massage_from_player_1[3];
+    char massage_from_player_2[3];
+
     bool game_finished = false;
     bool player_1_turn = true;
+
     while (!game_finished)
     {
+        // printf("XDD\n");
         if (player_1_turn)
         {
-            //sending messages to players, 11 - your turn, 12 - opponent's turn
-            write(player_1, 11, sizeof(int)); 
-            write(player_2, 12, sizeof(int));
-            //waiting for respond from player 1
-            read(player_1, &space_number, sizeof(int));
-            //sending the respond to player 2
-            write(player_2, &space_number, sizeof(int));
+            printf("Game ID: %d\tPlayer 1 Turn\n", game_id);
+            strcpy(massage_to_player_1, "11");
+            strcpy(massage_to_player_2, "12");
+
+            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+
+            // waiting for respond from player 1
+            read(player_1, massage_from_player_1, sizeof(massage_from_player_1));
+
+            // sending the respond to player 2
+            strcpy(massage_to_player_2, massage_from_player_1);
+            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+            printf("Game ID: %d\tPlayer 1 Move: %s\n", game_id, massage_from_player_1);
+
             player_1_turn = false;
         }
         else
         {
-            write(player_1, 12, sizeof(int));
-            write(player_2, 11, sizeof(int));
-            //waiting for respond from player 2
-            read(player_2, &space_number, sizeof(int));
-            //sending the respond to player 2
-            write(player_1, &space_number, sizeof(int));
+            printf("Game ID: %d\tPlayer 2 Turn\n", game_id);
+            strcpy(massage_to_player_1, "12");
+            strcpy(massage_to_player_2, "11");
+
+            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+
+            // waiting for respond from player 2
+            read(player_2, massage_from_player_2, sizeof(massage_from_player_2));
+
+            // sending the respond to player 1
+            strcpy(massage_to_player_1, massage_from_player_2);
+            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+            printf("Game ID: %d\tPlayer 2 Move: %s\n", game_id, massage_from_player_2);
+
             player_1_turn = true;
         }
     }
