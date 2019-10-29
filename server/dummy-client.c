@@ -16,7 +16,6 @@
 
 #define SERVER_PORT 1234
 
-
 int main(int argc, char *argv[])
 {
     int connection_socket_descriptor;
@@ -30,17 +29,17 @@ int main(int argc, char *argv[])
     inet_pton(AF_INET, "127.0.0.1", &(server_address.sin_addr));
 
     connect(connection_socket_descriptor, (struct sockaddr *)&server_address, sizeof(struct sockaddr));
-    printf("Waiting for the second player\n");
-    char buf[40];
-    read(connection_socket_descriptor, buf, sizeof(buf));
-    printf("%s\n", buf);
 
-    bool game_finished = false;
+    printf("Waiting for the second player\n");
 
     char message_from_server[3];
     char message_to_server[3];
 
-    while (!game_finished)
+    read(connection_socket_descriptor, message_from_server, sizeof(message_from_server));
+    if (strcmp(message_from_server, "sr") == 0)
+        printf("Second player ready!\n");
+
+    while (1)
     {
         read(connection_socket_descriptor, message_from_server, sizeof(message_from_server));
         if (strcmp(message_from_server, "11") == 0)
