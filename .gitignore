@@ -2,3 +2,5 @@
 *.x
 # .vscode folder
 .vscode/
+# .class - java compilated files
+*.class
