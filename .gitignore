@@ -1,6 +1,10 @@
 # .x - exec
 *.x
-# .vscode folder
+# .vscode, IntelliJ, javafx libraries folders
 .vscode/
-# .class - java compilated files
+.idea/
+javafx-sdk-11.0.2/
+*.iml
+# java compilated files
 *.class
+out/
