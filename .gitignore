@@ -5,6 +5,6 @@
 .idea/
 javafx-sdk-11.0.2/
 *.iml
-# java compilated files
+# java compiled files
 *.class
 out/
