@@ -45,8 +45,9 @@ void tournament(int game_id, int player_1, int player_2)
             write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
 
             // waiting for respond from player 1
+            printf("XD1\n");
             read(player_1, massage_from_player_1, sizeof(massage_from_player_1));
-
+            printf("XD2\n");
             // sending the respond to player 2
             strcpy(massage_to_player_2, massage_from_player_1);
             write(player_2, massage_to_player_2, sizeof(massage_to_player_2));

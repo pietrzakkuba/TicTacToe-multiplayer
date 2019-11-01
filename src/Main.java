@@ -3,8 +3,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 
 public class Main extends Application {
 
@@ -19,13 +19,33 @@ public class Main extends Application {
         launch(args);
     }
 
-    static String readFromServer(BufferedReader reader) throws IOException {
+    private static Socket clientSocket;
+    private static InputStream input;
+    private static OutputStream output;
+
+    static void connect(String adr) throws IOException {
+        clientSocket = new Socket(adr, 1234);
+        input = clientSocket.getInputStream();
+        output = clientSocket.getOutputStream();
+    }
+
+    static String readFromServer() throws IOException {
         StringBuilder msg = new StringBuilder();
         int x;
-        while ((x = reader.read()) != 0) {
+        while ((x = input.read()) != 0) {
             msg.append((char) x);
         }
         return msg.toString();
     }
+
+    static void writeToServer(String msg) throws IOException {
+        output.write(msg.getBytes());
+    }
+
+    static void closeConnection() throws IOException {
+        clientSocket.close();
+    }
+
+
 
 }
