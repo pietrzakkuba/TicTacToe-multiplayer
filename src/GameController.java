@@ -13,14 +13,14 @@ public class GameController implements Initializable {
     private boolean myTurn() throws IOException {
         String turn = Main.readFromServer();
         if (turn.equals("11")) {
-            System.out.println("Your turn");
+            System.out.println("Your turn " + turn);
             return true;
         }
         else if (turn.equals("12")) {
-            System.out.println("Opponent's turn");
+            System.out.println("Opponent's turn " + turn);
             return false;
         }
-        System.out.println("Something went wrong!");
+        System.out.println("Something went wrong! " + turn);
         return false;
     }
 
@@ -31,7 +31,8 @@ public class GameController implements Initializable {
                 System.out.println("I am X");
             } else {
                 System.out.println("I am O");
-                Main.readFromServer();
+                System.out.println("I am receiving this from server: " + Main.readFromServer());
+                myTurn();
             }
 
 
@@ -50,20 +51,18 @@ public class GameController implements Initializable {
         String message_to_server;
         message_to_server = ((Button)actionEvent.getSource()).getId();
 
-//        if (game_finished)
-//            first_number = "2";
 
         message_to_server = first_number + message_to_server.charAt(message_to_server.length() - 1) + '\0';
-        System.out.print(message_to_server);
+
+        System.out.println("I am sending this to server:  " + message_to_server);
         Main.writeToServer(message_to_server);
+
         myTurn();
 
-        System.out.println(Main.readFromServer());
+        System.out.println("I am receiving this from server: " + Main.readFromServer());
+
+        myTurn();
 
     }
-    public void waitForMove() throws IOException {
-        System.out.println(Main.readFromServer());
-    }
-
 
 }
