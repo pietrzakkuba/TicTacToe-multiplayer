@@ -100,8 +100,9 @@ int main(int argc, char *argv[])
         printf("Game ID: %d\tSecond player has joined!\tplayer's CSD: %d\n", game_id, connection_socket_descriptor[1]);
         
         //sr = second player is ready
-        write(connection_socket_descriptor[0], "sr\n", sizeof("sr\n"));
-        write(connection_socket_descriptor[1], "sr\n", sizeof("sr\n"));
+        write(connection_socket_descriptor[0], "sr", sizeof("sr"));
+        write(connection_socket_descriptor[1], "sr", sizeof("sr"));
+
 
         //creating a game thread
         pthread_t game_thread;

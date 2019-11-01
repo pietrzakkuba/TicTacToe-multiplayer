@@ -17,7 +17,7 @@
 void tournament(int game_id, int player_1, int player_2)
 {
     // each space has its number, shown below
-    // |x1|x2|x3|   x = 0 -> game conitous
+    // |x1|x2|x3|   x = 0 -> game continues
     // |x4|x5|x6|   x = 2 -> game is over
     // |x7|x8|x9|
     // additional numbers 11 - your turn, 12 - opponents turn
