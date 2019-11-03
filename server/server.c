@@ -51,6 +51,10 @@ int main(int argc, char *argv[])
         perror("Creating new socket failed");
         exit(-1);
     }
+    //idk
+    if (setsockopt(server_socket_descriptor, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0)
+        perror("setsockopt(SO_REUSEADDR) failed");
+    //idk
 
     // binding name to the socket
     int bind_result;

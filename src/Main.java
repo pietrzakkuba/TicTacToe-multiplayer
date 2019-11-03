@@ -8,20 +8,23 @@ import java.net.Socket;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage window) throws Exception {
+    private static Socket clientSocket;
+    private static InputStream input;
+    private static OutputStream output;
+    static Stage window;
 
-        window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
-        window.setTitle("TicTacToe - Login");
-        window.show();
+
+    @Override
+    public void start(Stage window2) throws Exception {
+        window = window2;
+        window2.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
+        window2.setTitle("TicTacToe - Login");
+        window2.show();
     }
     public static void main(String[] args) {
         launch(args);
     }
 
-    private static Socket clientSocket;
-    private static InputStream input;
-    private static OutputStream output;
 
     static void connect(String adr) throws IOException {
         clientSocket = new Socket(adr, 1234);

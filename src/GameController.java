@@ -26,23 +26,18 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            if (myTurn()) {
-                System.out.println("I am X");
-            } else {
-                System.out.println("I am O");
-                System.out.println("I am receiving this from server: " + Main.readFromServer());
-                myTurn();
-            }
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (myTurn()) {
+//                System.out.println("I am X");
+//            } else {
+//                System.out.println("I am O");
+//                System.out.println("I am receiving this from server: " + Main.readFromServer());
+//                myTurn();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
-
-
 
 
     public void makeMove(ActionEvent actionEvent) throws IOException {
