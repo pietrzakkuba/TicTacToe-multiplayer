@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController">
    <children>
-      <GridPane alignment="CENTER" gridLinesVisible="true" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="400.0">
+      <GridPane fx:id="mainGrid" alignment="CENTER" gridLinesVisible="true" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="400.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -45,12 +45,12 @@
          <children>
             <Label text="You: " />
             <Label text="Opponent: " GridPane.rowIndex="1" />
-            <Label text="X" GridPane.columnIndex="1" />
-            <Label text="O" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="LabelYou" GridPane.columnIndex="1" />
+            <Label fx:id="LabelOpponent" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
       </GridPane>
       <Button layoutX="407.0" layoutY="504.0" mnemonicParsing="false" text="Exit" />
-      <TextArea editable="false" layoutX="50.0" layoutY="590.0" prefHeight="82.0" prefWidth="400.0" wrapText="true" />
+      <TextArea fx:id="Console" editable="false" layoutX="50.0" layoutY="590.0" prefHeight="82.0" prefWidth="400.0" wrapText="true" />
       <Label layoutX="50.0" layoutY="568.0" text="Console" />
    </children>
 </Pane>

@@ -17,6 +17,7 @@ public class Main extends Application {
     @Override
     public void start(Stage window2) throws Exception {
         window = window2;
+
         window2.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
         window2.setTitle("TicTacToe - Login");
         window2.show();

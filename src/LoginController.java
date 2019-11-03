@@ -18,22 +18,7 @@ import static java.lang.Thread.sleep;
 public class LoginController{
     
     public TextField serverTextField;
-    public Button joinButton;
-    public Button exitButton;
-
-    private Task getConnection = new Task<Void>() {
-        @Override
-        public Void call() {
-            Platform.runLater ( () -> {
-                try {
-                    Main.connect(serverTextField.getText());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            return null;
-        }
-    };
+    public Button joinButton, exitButton;
 
     private Task getWaitLayout = new Task<Void>() {
         @Override
@@ -69,6 +54,7 @@ public class LoginController{
     public void join(ActionEvent actionEvent) throws IOException {
 
         Main.connect(serverTextField.getText());
+
 
         new Thread(getWaitLayout).start();
 
