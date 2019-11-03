@@ -21,11 +21,10 @@
     -fx-opacity: 1.0;
 }
 .my_buttons {
-    -fx-background-color: #118911;
+    -fx-background-color: #106310;
 }
-
 .not_my_buttons {
-    -fx-background-color: #B51717;
+    -fx-background-color: #7F1010;
 }
 .my_buttons, .not_my_buttons {
     -fx-font-size: 3em;
@@ -39,7 +38,18 @@
 #exitButton {
     -fx-background-color: #993333;
 }
-
 #exitButton:hover {
     -fx-background-color: #7F0000;
+}
+.whoseTurn {
+    -fx-font-size: 1.8em;
+}
+.you {
+    -fx-text-fill: #106310;
+}
+.opponent {
+    -fx-text-fill: #7F1010;
+}
+.you, .opponent {
+    -fx-font-size: 1.4em;
 }

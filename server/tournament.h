@@ -34,7 +34,6 @@ void tournament(int game_id, int player_1, int player_2)
     // game loop; wants confirmation from both players that game is over to stop
     while (!game_finished_player_1 || !game_finished_player_2)
     {
-        // printf("XDD\n");
         if (player_1_turn)
         {
             printf("Game ID: %d\tPlayer's 1 Turn\n", game_id);

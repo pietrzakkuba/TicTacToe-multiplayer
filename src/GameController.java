@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,22 +20,27 @@ import java.util.ResourceBundle;
 public class GameController implements Initializable {
 
     public Button button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    public Label LabelYou, LabelOpponent;
+    public Label LabelYou, LabelOpponent,whoseTurn;
     public GridPane mainGrid;
-    public TextArea Console;
     public Pane pane;
-    private boolean isX;
+    private boolean isX, game_finished = false;
     private String[] values = new String[9];
 
 
     private boolean myTurn() throws IOException {
         String turn = Main.readFromServer();
         if (turn.equals("11")) {
-            System.out.println("Your turn");
+            Platform.runLater ( () -> {
+                whoseTurn.setText("Your turn!");
+                whoseTurn.setTextFill(Color.web("#106310"));
+            });
             return true;
         }
         else if (turn.equals("12")) {
-            System.out.println("Opponent's turn");
+            Platform.runLater ( () -> {
+                whoseTurn.setText("Opponent's turn!");
+                whoseTurn.setTextFill(Color.web("#7F1010"));
+            });
             return false;
         }
         System.out.println("Something went wrong! " + turn);
@@ -50,6 +56,8 @@ public class GameController implements Initializable {
             !values[0].equals("")
         ) {
             System.out.println("GAME OVER 123");
+            game_finished = true;
+
         } else if
         (
            values[3].equals(values[4]) &&
@@ -57,6 +65,7 @@ public class GameController implements Initializable {
             !values[3].equals("")
         ) {
             System.out.println("GAME OVER 456");
+            game_finished = true;
         } else if
         (
             values[6].equals(values[7]) &&
@@ -64,6 +73,7 @@ public class GameController implements Initializable {
             !values[6].equals("")
         ) {
             System.out.println("GAME OVER 789");
+            game_finished = true;
         } else if
         (
             values[0].equals(values[3]) &&
@@ -71,6 +81,7 @@ public class GameController implements Initializable {
             !values[0].equals("")
         ) {
             System.out.println("GAME OVER 147");
+            game_finished = true;
         } else if
         (
             values[1].equals(values[4]) &&
@@ -78,6 +89,7 @@ public class GameController implements Initializable {
             !values[1].equals("")
         ) {
             System.out.println("GAME OVER 258");
+            game_finished = true;
         } else if
         (
             values[2].equals(values[5]) &&
@@ -85,6 +97,7 @@ public class GameController implements Initializable {
             !values[2].equals("")
         ) {
             System.out.println("GAME OVER 369");
+            game_finished = true;
         } else if
         (
             values[0].equals(values[4]) &&
@@ -92,6 +105,7 @@ public class GameController implements Initializable {
             !values[0].equals("")
         ) {
             System.out.println("GAME OVER 159");
+            game_finished = true;
         } else if
         (
             values[2].equals(values[4]) &&
@@ -99,6 +113,7 @@ public class GameController implements Initializable {
             !values[2].equals("")
         ) {
             System.out.println("GAME OVER 357");
+            game_finished = true;
         }
 
     }
@@ -110,6 +125,7 @@ public class GameController implements Initializable {
     private void waitForMove() throws IOException {
         Button button;
         String message_from_server = Main.readFromServer();
+        game_finished = message_from_server.charAt(0) == '2';
         char button_number = message_from_server.charAt(1);
         String button_id = "button" + button_number;
         values[button_number - '0' - 1] = isX ? "O" : "X";
@@ -120,8 +136,13 @@ public class GameController implements Initializable {
             button.setText(isX ? "O" : "X");
             button.getStyleClass().add("not_my_buttons");
         });
-        Console.appendText("\nI am receiving this from server: " + message_from_server);
-        changeAbility(myTurn());
+        if (!game_finished) changeAbility(myTurn());
+        else {
+            Main.writeToServer(message_from_server + '\0'); // ok i've lost
+            Platform.runLater ( () -> {
+                whoseTurn.setText("Opponent has won!");
+            });
+        }
     }
 
     @Override
@@ -156,7 +177,6 @@ public class GameController implements Initializable {
     public void makeMove(ActionEvent actionEvent) throws IOException {
 
         new Thread(()->{
-            String first_number = "0";
             Button button = (Button)actionEvent.getSource();
             Platform.runLater( () -> {
                 button.setDisable(true);
@@ -167,14 +187,20 @@ public class GameController implements Initializable {
             char button_number = message_to_server.charAt(message_to_server.length() - 1);
             values[button_number - '0' - 1] = isX ? "X" : "O";
             checkState();
+            String first_number = !game_finished ? "0" : "2";
+            Platform.runLater ( () -> {
+                whoseTurn.setText("You have won!");
+            });
             message_to_server = first_number + button_number + '\0';
-            if (!Console.getText().equals("")) Console.appendText("\n");
-                Console.appendText("I am sending this to server:  " + message_to_server);
             try {
                 Main.writeToServer(message_to_server);
-                changeAbility(myTurn());
-
-                waitForMove();
+                if (!game_finished) {
+                    changeAbility(myTurn());
+                    waitForMove();
+                }
+                else {
+                    changeAbility(false);
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();

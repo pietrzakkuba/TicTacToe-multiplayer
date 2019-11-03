@@ -2,13 +2,13 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GameController">
    <children>
       <GridPane fx:id="mainGrid" alignment="CENTER" gridLinesVisible="true" layoutX="50.0" layoutY="50.0" prefHeight="400.0" prefWidth="400.0">
         <columnConstraints>
@@ -45,12 +45,21 @@
          <children>
             <Label text="You: " />
             <Label text="Opponent: " GridPane.rowIndex="1" />
-            <Label fx:id="LabelYou" GridPane.columnIndex="1" />
-            <Label fx:id="LabelOpponent" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="LabelYou" styleClass="you" GridPane.columnIndex="1">
+               <effect>
+                  <Glow level="1.0" />
+               </effect></Label>
+            <Label fx:id="LabelOpponent" styleClass="opponent" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <effect>
+                  <Glow level="1.0" />
+               </effect></Label>
          </children>
       </GridPane>
-      <Button layoutX="407.0" layoutY="504.0" mnemonicParsing="false" text="Exit" />
-      <TextArea fx:id="Console" editable="false" layoutX="50.0" layoutY="590.0" prefHeight="82.0" prefWidth="400.0" wrapText="true" />
-      <Label layoutX="50.0" layoutY="568.0" text="Console" />
+      <Button id="exitButton" layoutX="407.0" layoutY="504.0" mnemonicParsing="false" text="Exit" />
+      <Label fx:id="whoseTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="14.0" prefHeight="29.0" prefWidth="400.0" styleClass="whoseTurn" text="Your turn!">
+         <effect>
+            <Glow level="1.0" />
+         </effect>
+      </Label>
    </children>
 </Pane>
