@@ -1,0 +1,45 @@
+.root {
+    -fx-background-color: #232323;
+}
+.label {
+    -fx-text-fill: #717171;
+}
+.text-field {
+    -fx-background-color: #D1D1D1;
+    -fx-text-fill: #232323;
+    -fx-prompt-text-fill: #858585;
+}
+.button {
+    -fx-text-fill: #232323;
+    -fx-background-color: #1A3A70;
+}
+.button:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #173466;
+}
+.button:disabled {
+    -fx-opacity: 1.0;
+}
+.my_buttons {
+    -fx-background-color: #118911;
+}
+
+.not_my_buttons {
+    -fx-background-color: #B51717;
+}
+.my_buttons, .not_my_buttons {
+    -fx-font-size: 3em;
+}
+#joinButton {
+    -fx-background-color: #339933;
+}
+#joinButton:hover {
+    -fx-background-color: #007F00;
+}
+#exitButton {
+    -fx-background-color: #993333;
+}
+
+#exitButton:hover {
+    -fx-background-color: #7F0000;
+}

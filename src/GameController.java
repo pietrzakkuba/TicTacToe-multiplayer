@@ -118,6 +118,7 @@ public class GameController implements Initializable {
         Platform.runLater ( () -> {
             button.setDisable(true);
             button.setText(isX ? "O" : "X");
+            button.getStyleClass().add("not_my_buttons");
         });
         Console.appendText("\nI am receiving this from server: " + message_from_server);
         changeAbility(myTurn());
@@ -160,6 +161,7 @@ public class GameController implements Initializable {
             Platform.runLater( () -> {
                 button.setDisable(true);
                 button.setText(isX ? "X" : "O");
+                button.getStyleClass().add("my_buttons");
             });
             String message_to_server = button.getId();
             char button_number = message_to_server.charAt(message_to_server.length() - 1);

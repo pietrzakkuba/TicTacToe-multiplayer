@@ -25,8 +25,8 @@ public class LoginController{
         public Void call() {
                 Platform.runLater ( () -> {
                     try {
-                        Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
-                        Main.window.show();
+                            Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
+                            Main.window.show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -54,7 +54,6 @@ public class LoginController{
     public void join(ActionEvent actionEvent) throws IOException {
 
         Main.connect(serverTextField.getText());
-
 
         new Thread(getWaitLayout).start();
 
