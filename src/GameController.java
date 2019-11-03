@@ -1,29 +1,23 @@
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
     public Button button1, button2, button3, button4, button5, button6, button7, button8, button9;
-    public Label LabelYou, LabelOpponent,whoseTurn;
+    public Label LabelYou, LabelOpponent, whoseTurn;
     public GridPane mainGrid;
     public Pane pane;
-    private boolean isX, game_finished = false;
+    private boolean isX, game_finished = false, draw = false;
     private String[] values = new String[9];
 
 
@@ -48,7 +42,6 @@ public class GameController implements Initializable {
     }
 
     private void checkState() {
-
         if
         (
             values[0].equals(values[1]) &&
@@ -57,7 +50,6 @@ public class GameController implements Initializable {
         ) {
             System.out.println("GAME OVER 123");
             game_finished = true;
-
         } else if
         (
            values[3].equals(values[4]) &&
@@ -114,6 +106,19 @@ public class GameController implements Initializable {
         ) {
             System.out.println("GAME OVER 357");
             game_finished = true;
+        } else {
+            boolean not_draw_flag = false;
+            for (int i = 0; i < 9; i++) {
+                if(values[i].equals("")) {
+                    not_draw_flag = true;
+                    break;
+                }
+            }
+            if (!not_draw_flag) {
+                System.out.println("DRAW");
+                game_finished = true;
+                draw = true;
+            }
         }
 
     }
@@ -138,10 +143,18 @@ public class GameController implements Initializable {
         });
         if (!game_finished) changeAbility(myTurn());
         else {
-            Main.writeToServer(message_from_server + '\0'); // ok i've lost
-            Platform.runLater ( () -> {
-                whoseTurn.setText("Opponent has won!");
-            });
+            Main.writeToServer(message_from_server + '\0');
+            if(!draw) {
+                Platform.runLater(() -> {
+                    whoseTurn.setText("Opponent has won!");
+                });
+            }
+            else {
+                Platform.runLater(() -> {
+                    whoseTurn.setText("Draw!");
+                    whoseTurn.setTextFill(Color.web("#1A3A70"));
+                });
+            }
         }
     }
 
@@ -188,9 +201,6 @@ public class GameController implements Initializable {
             values[button_number - '0' - 1] = isX ? "X" : "O";
             checkState();
             String first_number = !game_finished ? "0" : "2";
-            Platform.runLater ( () -> {
-                whoseTurn.setText("You have won!");
-            });
             message_to_server = first_number + button_number + '\0';
             try {
                 Main.writeToServer(message_to_server);
@@ -198,10 +208,18 @@ public class GameController implements Initializable {
                     changeAbility(myTurn());
                     waitForMove();
                 }
-                else {
+                else if (!draw){
+                    Platform.runLater ( () -> {
+                        whoseTurn.setText("You have won!");
+                    });
                     changeAbility(false);
                 }
-
+                else {
+                    Platform.runLater ( () -> {
+                        whoseTurn.setText("Draw!");
+                        whoseTurn.setTextFill(Color.web("#1A3A70"));
+                    });
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

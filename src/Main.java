@@ -3,7 +3,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 public class Main extends Application {
@@ -15,12 +17,12 @@ public class Main extends Application {
 
 
     @Override
-    public void start(Stage window2) throws Exception {
-        window = window2;
-
-        window2.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
-        window2.setTitle("TicTacToe - Login");
-        window2.show();
+    public void start(Stage primaryStage) throws Exception {
+        window = primaryStage;
+        primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
+        primaryStage.setTitle("TicTacToe - Login");
+        primaryStage.setResizable(false);
+        primaryStage.show();
     }
     public static void main(String[] args) {
         launch(args);
