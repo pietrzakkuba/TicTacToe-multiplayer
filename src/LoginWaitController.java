@@ -26,7 +26,7 @@ public class LoginWaitController {
     }
 
     public void exit(ActionEvent actionEvent) throws IOException {
-        Main.writeToServerSupport("13\0"); // a drugi gracz??
+        Main.writeToServerSupport("13\0");
         Main.window.close();
     }
 }

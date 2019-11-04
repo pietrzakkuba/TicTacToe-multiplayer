@@ -42,7 +42,7 @@ public class LoginController{
         }
     };
 
-    public void join(ActionEvent actionEvent) throws IOException {
+    private void connect() throws IOException {
         String adr = serverTextField.getText();
         if (adr.equals("")) {
             Main.connect("127.0.0.1");
@@ -59,10 +59,11 @@ public class LoginController{
                 if (msg.equals("sr")) {
                     new Thread(getGameLayout).start();
                 } else if (msg.equals("sl")) {
+                    rejoin();
 //                    Main.closeConnection();
-                    Platform.runLater ( () -> {
-                        Main.window.close();
-                    });
+//                    Platform.runLater ( () -> {
+//                        Main.window.close();
+//                    });
                 } else if (msg.equals("il")) {
 //                    Main.closeConnection();
                     Platform.runLater ( () -> {
@@ -74,8 +75,15 @@ public class LoginController{
                 e.printStackTrace();
             }
         }).start();
+    }
 
+    public void join(ActionEvent actionEvent) throws IOException {
+        connect();
+    }
 
+    private void rejoin() throws IOException {
+        Main.closeConnection();
+        connect();
     }
 
     public void exit(ActionEvent actionEvent) {

@@ -179,14 +179,16 @@ int main(int argc, char *argv[])
         }
         if (player_one_has_exited)
         {
-            //sl = second player already had left
+            //sl = second player already has left befere 
             write(connection_socket_descriptor[1], "sl", sizeof("sl"));
+            printf("Game ID: %d\tSecond player has joined!\n", game_id);
+            printf("Game ID: %d\tMoving second player to the next game as a first player\n", game_id);
         }
         else
         {
             pthread_cancel(client_1_waits_thread);
+            
             //setting up a game
-
             printf("Game ID: %d\tSecond player has joined!\tplayer's CSD: %d\n", game_id, connection_socket_descriptor[1]);
 
             //sr = second player is ready
