@@ -13,6 +13,7 @@
 #include <pthread.h>
 
 #include "tournament.h"
+#include "leave.h"
 
 #define SERVER_PORT 1234
 #define QUEUE_SIZE 10
@@ -24,7 +25,7 @@ struct game_thread_args
     int connection_socket_descriptor_2;
 };
 
-struct client_1_waits_thread_args
+struct leave_thread_args
 {
     int game_id;
     int connection_socket_descriptor_1;
@@ -42,18 +43,8 @@ void *handlingConnection(void *game_args)
 bool player_one_has_exited;
 void *client1Waits(void *client_1_waits_args)
 {
-    struct client_1_waits_thread_args *msg = (struct client_1_waits_thread_args *)client_1_waits_args;
-    char client[3];
-    read(msg->connection_socket_descriptor_1_support, client, sizeof(client));
-    if (strcmp(client, "13") == 0)
-    {
-        player_one_has_exited = true;
-        printf("Game ID: %d\tFirst player has left!\n", msg->game_id);
-
-        // il = i have exited (write below needed to close threads on client's side)
-        write(msg->connection_socket_descriptor_1, "il", sizeof("il"));
-
-    }
+    struct leave_thread_args *msg = (struct leave_thread_args *)client_1_waits_args;
+    player_one_has_exited = leave(msg->connection_socket_descriptor_1, msg->connection_socket_descriptor_1_support, msg->game_id);
     pthread_exit(NULL);
     return EXIT_SUCCESS;
 }
@@ -77,10 +68,14 @@ int main(int argc, char *argv[])
         perror("Creating new socket failed");
         exit(-1);
     }
-    //idk
-    if (setsockopt(server_socket_descriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+
+    //using socket, even if not free
+    int reusing_socket_result;
+    reusing_socket_result = setsockopt(server_socket_descriptor, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
+    if (reusing_socket_result < 0)
+    {
         perror("setsockopt(SO_REUSEADDR) failed");
-    //idk
+    }
 
     // binding name to the socket
     int bind_result;
@@ -105,7 +100,6 @@ int main(int argc, char *argv[])
     // each client has 2 connection socket descriptors
     // one for sending and receiving game moves
     // other one is for letting server know that client has exited
-    // this information is necessary to avoid server crashes
     int connection_socket_descriptor[4];
     char check0[3], check1[3], check2[3], check3[3];
     int game_thread_result;
@@ -134,21 +128,21 @@ int main(int argc, char *argv[])
         printf("Game ID: %d\tFirst player has joined!\tplayer's CSD: %d\n", game_id, connection_socket_descriptor[0]);
 
         // checking whether 1 client had left before 2 has joined
-        int client_1_waits_thread_result;
-        pthread_t client_1_waits_thread;
+        int leave_thread_result;
+        pthread_t leave_thread;
 
-        struct client_1_waits_thread_args client_1_args;
-        client_1_args.connection_socket_descriptor_1 = connection_socket_descriptor[0];
-        client_1_args.connection_socket_descriptor_1_support = connection_socket_descriptor[2];
-        client_1_args.game_id = game_id;
+        struct leave_thread_args leave_args;
+        leave_args.connection_socket_descriptor_1 = connection_socket_descriptor[0];
+        leave_args.connection_socket_descriptor_1_support = connection_socket_descriptor[2];
+        leave_args.game_id = game_id;
 
-        client_1_waits_thread_result = pthread_create(&client_1_waits_thread, NULL, client1Waits, (void *)&client_1_args);
-        if (client_1_waits_thread_result < 0)
+        leave_thread_result = pthread_create(&leave_thread, NULL, client1Waits, (void *)&leave_args);
+        if (leave_thread_result < 0)
         {
             perror("Creating a game thread failed");
             exit(-1);
         }
-        pthread_detach(client_1_waits_thread);
+        pthread_detach(leave_thread);
 
         // waiting for client 2 to enter
 
@@ -186,7 +180,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            pthread_cancel(client_1_waits_thread);
+            pthread_cancel(leave_thread);
             
             //setting up a game
             printf("Game ID: %d\tSecond player has joined!\tplayer's CSD: %d\n", game_id, connection_socket_descriptor[1]);
