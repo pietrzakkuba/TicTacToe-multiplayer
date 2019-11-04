@@ -9,6 +9,7 @@ import java.util.Random;
 public class LoginWaitController {
     public Button boredButton;
     public Label waitLabel;
+    public Button exitButton;
 
 
     public void clientIsBored(ActionEvent actionEvent) {
@@ -21,5 +22,9 @@ public class LoginWaitController {
                 waitLabel.setStyle("-fx-text-fill: " + String.format("#%06x", rand_num4) + ";");
             });
         }).start();
+    }
+
+    public void exit(ActionEvent actionEvent) {
+        Main.window.close();
     }
 }

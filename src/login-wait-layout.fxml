@@ -6,7 +6,8 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="350.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LoginWaitController">
    <children>
-      <Label fx:id="waitLabel" layoutX="85.0" layoutY="41.0" text="Waiting for second player..." />
-      <Button fx:id="boredButton" alignment="CENTER" contentDisplay="CENTER" layoutX="85.0" layoutY="86.0" mnemonicParsing="false" onAction="#clientIsBored" prefHeight="26.0" prefWidth="180.0" text="I am bored!" />
+      <Label fx:id="waitLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="79.0" layoutY="35.0" styleClass="wait_text" text="Waiting for the second player..." />
+      <Button fx:id="boredButton" alignment="CENTER" contentDisplay="CENTER" layoutX="91.0" layoutY="74.0" mnemonicParsing="false" onAction="#clientIsBored" prefHeight="26.0" prefWidth="180.0" text="I am bored!" />
+      <Button fx:id="exitButton" layoutX="283.0" layoutY="74.0" mnemonicParsing="false" onAction="#exit" text="Exit" />
    </children>
 </Pane>

@@ -55,7 +55,7 @@
                </effect></Label>
          </children>
       </GridPane>
-      <Button id="exitButton" layoutX="407.0" layoutY="504.0" mnemonicParsing="false" text="Exit" />
+      <Button id="exitButton" fx:id="exitButton" layoutX="407.0" layoutY="504.0" mnemonicParsing="false" onAction="#exit" text="Exit" />
       <Label fx:id="whoseTurn" alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="14.0" prefHeight="29.0" prefWidth="400.0" styleClass="whoseTurn">
          <effect>
             <Glow level="1.0" />

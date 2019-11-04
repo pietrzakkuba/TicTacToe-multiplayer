@@ -66,7 +66,8 @@ public class LoginController{
     }
 
     public void exit(ActionEvent actionEvent) {
-        System.out.println("EXIT");
+        Main.window.close();
+
     }
 
 

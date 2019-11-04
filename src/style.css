@@ -53,3 +53,6 @@
 .you, .opponent {
     -fx-font-size: 1.4em;
 }
+.wait_text {
+    -fx-font-size: 1.0em;
+}

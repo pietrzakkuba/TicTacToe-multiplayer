@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-    public Button button1, button2, button3, button4, button5, button6, button7, button8, button9;
+    public Button button1, button2, button3, button4, button5, button6, button7, button8, button9, exitButton;
     public Label LabelYou, LabelOpponent, whoseTurn;
     public GridPane mainGrid;
     public Pane pane;
@@ -226,4 +226,7 @@ public class GameController implements Initializable {
         }).start();
     }
 
+    public void exit(ActionEvent actionEvent) {
+        Main.window.close();
+    }
 }
