@@ -23,6 +23,8 @@ struct game_thread_args
     int game_id;
     int connection_socket_descriptor_1;
     int connection_socket_descriptor_2;
+    int connection_socket_descriptor_1_support;
+    int connection_socket_descriptor_2_support;
 };
 
 struct leave_thread_args
@@ -35,15 +37,16 @@ struct leave_thread_args
 void *handlingConnection(void *game_args)
 {
     struct game_thread_args *ids = (struct game_thread_args *)game_args;
-    tournament(ids->game_id, ids->connection_socket_descriptor_1, ids->connection_socket_descriptor_2);
+    tournament(ids->game_id, ids->connection_socket_descriptor_1, ids->connection_socket_descriptor_2,
+               ids->connection_socket_descriptor_1_support, ids->connection_socket_descriptor_2_support);
     pthread_exit(NULL);
     return EXIT_SUCCESS;
 }
 
 bool player_one_has_exited;
-void *client1Waits(void *client_1_waits_args)
+void *client1Waits(void *leave_args)
 {
-    struct leave_thread_args *msg = (struct leave_thread_args *)client_1_waits_args;
+    struct leave_thread_args *msg = (struct leave_thread_args *)leave_args;
     player_one_has_exited = leave(msg->connection_socket_descriptor_1, msg->connection_socket_descriptor_1_support, msg->game_id);
     pthread_exit(NULL);
     return EXIT_SUCCESS;
@@ -173,7 +176,7 @@ int main(int argc, char *argv[])
         }
         if (player_one_has_exited)
         {
-            //sl = second player already has left befere 
+            //sl = second player already has left befere
             write(connection_socket_descriptor[1], "sl", sizeof("sl"));
             printf("Game ID: %d\tSecond player has joined!\n", game_id);
             printf("Game ID: %d\tMoving second player to the next game as a first player\n", game_id);
@@ -181,7 +184,7 @@ int main(int argc, char *argv[])
         else
         {
             pthread_cancel(leave_thread);
-            
+
             //setting up a game
             printf("Game ID: %d\tSecond player has joined!\tplayer's CSD: %d\n", game_id, connection_socket_descriptor[1]);
 
@@ -194,6 +197,8 @@ int main(int argc, char *argv[])
             struct game_thread_args game_args;
             game_args.connection_socket_descriptor_1 = connection_socket_descriptor[0];
             game_args.connection_socket_descriptor_2 = connection_socket_descriptor[1];
+            game_args.connection_socket_descriptor_1_support = connection_socket_descriptor[2];
+            game_args.connection_socket_descriptor_2_support = connection_socket_descriptor[3];
             game_args.game_id = game_id;
             game_thread_result = pthread_create(&game_thread, NULL, handlingConnection, (void *)&game_args);
             if (game_thread_result < 0)
