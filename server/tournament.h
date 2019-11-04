@@ -31,7 +31,7 @@ void tournament(int game_id, int player_1, int player_2)
     bool game_finished_player_2 = false;
     bool player_1_turn = true;
 
-    // game loop; wants confirmation from both players that game is over to stop
+    // game loop; server wants confirmation from both players that game is over to stop
     while (!game_finished_player_1 || !game_finished_player_2)
     {
         if (player_1_turn)

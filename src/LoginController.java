@@ -19,7 +19,6 @@ public class LoginController{
                 Platform.runLater ( () -> {
                     try {
                             Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
-                            Main.window.show();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -35,7 +34,6 @@ public class LoginController{
                 try {
                     Main.window.setTitle("TicTacToe - Game");
                     Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("game-layout.fxml"))));
-                    Main.window.show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -45,8 +43,13 @@ public class LoginController{
     };
 
     public void join(ActionEvent actionEvent) throws IOException {
-
-        Main.connect(serverTextField.getText());
+        String adr = serverTextField.getText();
+        if (adr.equals("")) {
+            Main.connect("127.0.0.1");
+        }
+        else {
+            Main.connect(adr);
+        }
 
         new Thread(getWaitLayout).start();
 
