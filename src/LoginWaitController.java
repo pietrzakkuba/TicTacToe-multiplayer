@@ -4,6 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class LoginWaitController {
@@ -24,7 +25,9 @@ public class LoginWaitController {
         }).start();
     }
 
-    public void exit(ActionEvent actionEvent) {
+    public void exit(ActionEvent actionEvent) throws IOException {
+//        Main.connect("127.0.0.1"); // to be changed
+//        Main.writeToServer("13\0");
         Main.window.close();
     }
 }
