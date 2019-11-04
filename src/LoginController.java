@@ -53,21 +53,33 @@ public class LoginController{
 
         new Thread(getWaitLayout).start();
 
-        new Thread(()->{
+        new Thread(() -> {
             try {
-                if(Main.readFromServer().equals("sr")) {
+                String msg = Main.readFromServer();
+                if (msg.equals("sr")) {
                     new Thread(getGameLayout).start();
+                } else if (msg.equals("sl")) {
+//                    Main.closeConnection();
+                    Platform.runLater ( () -> {
+                        Main.window.close();
+                    });
+                } else if (msg.equals("il")) {
+//                    Main.closeConnection();
+                    Platform.runLater ( () -> {
+                        Main.window.close();
+                    });
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
 
+
     }
 
     public void exit(ActionEvent actionEvent) {
         Main.window.close();
-
     }
 
 

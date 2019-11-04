@@ -26,8 +26,7 @@ public class LoginWaitController {
     }
 
     public void exit(ActionEvent actionEvent) throws IOException {
-//        Main.connect("127.0.0.1"); // to be changed
-//        Main.writeToServer("13\0");
+        Main.writeToServerSupport("13\0"); // a drugi gracz??
         Main.window.close();
     }
 }

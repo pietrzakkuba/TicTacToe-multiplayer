@@ -37,7 +37,7 @@ public class Main extends Application {
         Random rand = new Random();
         char a = (char)(rand.nextInt(26) + 'a');
         char b = (char)(rand.nextInt(26) + 'a');
-        String msg = new StringBuilder().append(a).append(b).append('\0').toString();
+        String msg = String.valueOf(a) + b + '\0';
         clientSocket = new Socket(adr, 1234);
         input = clientSocket.getInputStream();
         output = clientSocket.getOutputStream();
@@ -46,7 +46,6 @@ public class Main extends Application {
         inputSupport = clientSocketSupport.getInputStream();
         outputSupport = clientSocketSupport.getOutputStream();
         writeToServerSupport(msg);
-        System.out.println(msg);
     }
 
     static String readFromServer() throws IOException {
