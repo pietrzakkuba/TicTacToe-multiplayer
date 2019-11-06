@@ -29,7 +29,7 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
     char massage_to_player_1[3];
     char massage_to_player_2[3];
     char massage_from_player_1[3];
-    char massage_from_player_2[3];
+    char massage_from_player_2[3]; // massage -> message 
 
     bool player_1_turn = true;
     bool game_finished = false;
@@ -43,6 +43,8 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
     }
 
     int read_result;
+
+
 
     // game loop
     while (!game_finished)
@@ -60,33 +62,35 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
             read_result = read(player_1, massage_from_player_1, sizeof(massage_from_player_1));
             if (read_result <= 0)
             {
-                game_finished = true;
                 printf("Game ID: %d\tPlayer 1 has left\n", game_id);
+                strcpy(massage_to_player_2, "sl"); // sl = second player has left
+                write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+                game_finished = true;
             }
             else
             {
                 values[atoi(massage_from_player_1) - 1] = 'X';
-            }
-            //checking state of the game and sending them to a client
-            check = checkState(values);
-            checktoSend[0] = check;
-            checktoSend[1] = check;
-            checktoSend[2] = '\0';
-            write(player_1, checktoSend, sizeof(checktoSend));
+                //checking state of the game and sending them to a client
+                check = checkState(values);
+                checktoSend[0] = check;
+                checktoSend[1] = check;
+                checktoSend[2] = '\0';
+                write(player_1, checktoSend, sizeof(checktoSend));
 
-            // sending the respond to player 2
-            strcpy(massage_to_player_2, massage_from_player_1);
-            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+                // sending the respond to player 2
+                strcpy(massage_to_player_2, massage_from_player_1);
+                write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
 
-            //sending the checkstate to a second client
-            write(player_2, checktoSend, sizeof(checktoSend));
+                //sending the checkstate to a second client
+                write(player_2, checktoSend, sizeof(checktoSend));
 
-            printf("Game ID: %d\tPlayer's 1 Move: %s\n", game_id, massage_from_player_1);
+                printf("Game ID: %d\tPlayer's 1 Move: %s\n", game_id, massage_from_player_1);
 
-            player_1_turn = false;
-            if (check == 'd' || check == 'X' || check == 'O')
-            {
-                game_finished = true;
+                player_1_turn = false;
+                if (check == 'd' || check == 'X' || check == 'O')
+                {
+                    game_finished = true;
+                }
             }
         }
         else if (!game_finished)
@@ -100,35 +104,37 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
 
             // waiting for respond from player 2
             read_result = read(player_2, massage_from_player_2, sizeof(massage_from_player_2));
-            if (read_result < 0)
+            if (read_result <= 0)
             {
-                game_finished = true;
                 printf("Game ID: %d\tPlayer 2 has left\n", game_id);
+                strcpy(massage_to_player_1, "sl"); // sl = second player has left
+                write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+                game_finished = true;
             }
             else
             {
                 values[atoi(massage_from_player_2) - 1] = 'O';
-            }
-            //checking state of the game and sending them to a client
-            check = checkState(values);
-            checktoSend[0] = check;
-            checktoSend[1] = check;
-            checktoSend[2] = '\0';
-            write(player_2, checktoSend, sizeof(checktoSend));
+                //checking state of the game and sending them to a client
+                check = checkState(values);
+                checktoSend[0] = check;
+                checktoSend[1] = check;
+                checktoSend[2] = '\0';
+                write(player_2, checktoSend, sizeof(checktoSend));
 
-            // sending the respond to player 1
-            strcpy(massage_to_player_1, massage_from_player_2);
-            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+                // sending the respond to player 1
+                strcpy(massage_to_player_1, massage_from_player_2);
+                write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
 
-            //sending the checkstate to a second client
-            write(player_1, checktoSend, sizeof(checktoSend));
+                //sending the checkstate to a second client
+                write(player_1, checktoSend, sizeof(checktoSend));
 
-            printf("Game ID: %d\tPlayer's 2 Move: %s\n", game_id, massage_from_player_2);
+                printf("Game ID: %d\tPlayer's 2 Move: %s\n", game_id, massage_from_player_2);
 
-            player_1_turn = true;
-            if (check == 'd' || check == 'X' || check == 'O')
-            {
-                game_finished = true;
+                player_1_turn = true;
+                if (check == 'd' || check == 'X' || check == 'O')
+                {
+                    game_finished = true;
+                }
             }
         }
     }

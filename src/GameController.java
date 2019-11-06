@@ -17,12 +17,13 @@ public class GameController implements Initializable {
     public Label LabelYou, LabelOpponent, whoseTurn;
     public GridPane mainGrid;
     public Pane pane;
-    private boolean isX, game_finished = false, draw = false;
+    private boolean isX, game_finished = false, draw = false, my_turn;
 
 
     private boolean myTurn() throws IOException {
         String turn = Main.readFromServer();
         if (turn.equals("11")) {
+            my_turn = true;
             Platform.runLater ( () -> {
                 whoseTurn.setText("Your turn!");
                 whoseTurn.setTextFill(Color.web("#106310"));
@@ -30,6 +31,7 @@ public class GameController implements Initializable {
             return true;
         }
         else if (turn.equals("12")) {
+            my_turn = false;
             Platform.runLater ( () -> {
                 whoseTurn.setText("Opponent's turn!");
                 whoseTurn.setTextFill(Color.web("#7F1010"));
@@ -48,39 +50,49 @@ public class GameController implements Initializable {
     private void waitForMove() throws IOException {
         Button button;
         String message_from_server = Main.readFromServer();
+        if (message_from_server.equals("sl")) {
+            Platform.runLater( () -> {
+                changeAbility(false);
+                whoseTurn.setText("Opponent has left!");
+                whoseTurn.setTextFill(Color.web("#1A3A70"));
+            });
 
-        String checkState = Main.readFromServer();
-
-        if (checkState.equals("XX") || checkState.equals("OO")) {
-            game_finished = true;
         }
-        if (checkState.equals("dd")) {
-            game_finished = true;
-            draw = true;
-        }
-
-        char button_number = message_from_server.charAt(1);
-        String button_id = "button" + button_number;
-        button = (Button)pane.getScene().lookup("#" + button_id);
-        Platform.runLater ( () -> {
-            button.setDisable(true);
-            button.setText(isX ? "O" : "X");
-            button.getStyleClass().add("not_my_buttons");
-        });
-        if (!game_finished) changeAbility(myTurn());
         else {
-            if(!draw) {
-                Platform.runLater(() -> {
-                    whoseTurn.setText("You have lost!");
-                });
+            String checkState = Main.readFromServer();
+
+            if (checkState.equals("XX") || checkState.equals("OO")) {
+                game_finished = true;
             }
+            if (checkState.equals("dd")) {
+                game_finished = true;
+                draw = true;
+            }
+
+            char button_number = message_from_server.charAt(1);
+            String button_id = "button" + button_number;
+            button = (Button)pane.getScene().lookup("#" + button_id);
+            Platform.runLater ( () -> {
+                button.setDisable(true);
+                button.setText(isX ? "O" : "X");
+                button.getStyleClass().add("not_my_buttons");
+            });
+            if (!game_finished) changeAbility(myTurn());
             else {
-                Platform.runLater(() -> {
-                    whoseTurn.setText("Draw!");
-                    whoseTurn.setTextFill(Color.web("#1A3A70"));
-                });
+                if(!draw) {
+                    Platform.runLater(() -> {
+                        whoseTurn.setText("You have lost!");
+                    });
+                }
+                else {
+                    Platform.runLater(() -> {
+                        whoseTurn.setText("Draw!");
+                        whoseTurn.setTextFill(Color.web("#1A3A70"));
+                    });
+                }
             }
         }
+
     }
 
     @Override
@@ -154,7 +166,10 @@ public class GameController implements Initializable {
     }
 
     public void exit(ActionEvent actionEvent) throws IOException {
-         Main.window.close();
-         Main.closeConnection();
+        if (my_turn) {
+            Main.window.close();
+            Main.closeConnection();
+        }
+
     }
 }
