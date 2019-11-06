@@ -12,65 +12,36 @@ public class LoginController{
     
     public TextField serverTextField;
     public Button joinButton, exitButton;
+    static String adr;
 
-    private Task getWaitLayout = new Task<Void>() {
-        @Override
-        public Void call() {
-                Platform.runLater ( () -> {
-                    try {
-                            Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            return null;
+    private void connect() throws IOException {
+        adr = serverTextField.getText();
+        if (adr.equals("")) {
+            adr ="127.0.0.1";
         }
-    };
-
-    private Task getGameLayout = new Task<Void>() {
-        @Override
-        public Void call() {
+        Main.connect(adr);
+        new Thread( () -> {
             Platform.runLater ( () -> {
                 try {
-                    Main.window.setTitle("TicTacToe - Game");
-                    Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("game-layout.fxml"))));
+                    Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
-            return null;
-        }
-    };
-
-    private void connect() throws IOException {
-        String adr = serverTextField.getText();
-        if (adr.equals("")) {
-            Main.connect("127.0.0.1");
-        }
-        else {
-            Main.connect(adr);
-        }
-
-        new Thread(getWaitLayout).start();
-
+        }).start();
         new Thread(() -> {
             try {
                 String msg = Main.readFromServer();
                 if (msg.equals("sr")) {
-                    new Thread(getGameLayout).start();
-                } else if (msg.equals("sl")) {
-                    rejoin();
-//                    Main.closeConnection();
-//                    Platform.runLater ( () -> {
-//                        Main.window.close();
-//                    });
-                } else if (msg.equals("il")) {
-//                    Main.closeConnection();
                     Platform.runLater ( () -> {
-                        Main.window.close();
+                        try {
+                            Main.window.setTitle("TicTacToe - Game");
+                            Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("game-layout.fxml"))));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     });
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -78,11 +49,6 @@ public class LoginController{
     }
 
     public void join(ActionEvent actionEvent) throws IOException {
-        connect();
-    }
-
-    private void rejoin() throws IOException {
-        Main.closeConnection();
         connect();
     }
 

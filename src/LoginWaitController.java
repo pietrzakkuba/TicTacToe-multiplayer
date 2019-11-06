@@ -25,7 +25,16 @@ public class LoginWaitController {
     }
 
     public void exit(ActionEvent actionEvent) throws IOException {
-        Main.writeToServerSupport("13\0");
+        new Thread(() -> {
+            try {
+
+//                Main.readFromServer(); // simulate sr
+                Main.readFromServer(); // simulate turn
+                Main.closeConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
         Main.window.close();
     }
 }

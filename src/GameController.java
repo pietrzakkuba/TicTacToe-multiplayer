@@ -1,6 +1,8 @@
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -47,10 +49,42 @@ public class GameController implements Initializable {
         mainGrid.setDisable(!my_turn);
     }
 
+    private void rejoin() throws IOException {
+        game_finished = true;
+        Main.closeConnection();
+        Main.connect(LoginController.adr);
+        Platform.runLater( () -> {
+            try {
+                Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        new Thread(() -> {
+            try {
+                String msg = Main.readFromServer();
+                if (msg.equals("sr")) {
+                    Platform.runLater( () -> {
+                        try {
+                            Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("game-layout.fxml"))));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
     private void waitForMove() throws IOException {
         Button button;
         String message_from_server = Main.readFromServer();
-        if (message_from_server.equals("sl")) {
+        if (message_from_server.equals("le")) {
+            rejoin();
+        } else if (message_from_server.equals("sl")) {
             game_finished = true;
             Platform.runLater( () -> {
                 changeAbility(false);
@@ -68,7 +102,6 @@ public class GameController implements Initializable {
                 game_finished = true;
                 draw = true;
             }
-
             char button_number = message_from_server.charAt(1);
             String button_id = "button" + button_number;
             button = (Button)pane.getScene().lookup("#" + button_id);
@@ -92,7 +125,6 @@ public class GameController implements Initializable {
                 }
             }
         }
-
     }
 
     @Override

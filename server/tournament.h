@@ -17,7 +17,7 @@
 
 
 // void managing a game
-void tournament(int game_id, int player_1, int player_2, int player_1_support, int player_2_support)
+void tournament(int game_id, int player_1, int player_2)
 {
 
     // each space has its number, shown below
@@ -44,7 +44,7 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
 
     int read_result;
 
-
+    bool start = true;
 
     // game loop
     while (!game_finished)
@@ -62,10 +62,23 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
             read_result = read(player_1, massage_from_player_1, sizeof(massage_from_player_1));
             if (read_result <= 0)
             {
-                printf("Game ID: %d\tPlayer 1 has left\n", game_id);
-                strcpy(massage_to_player_2, "sl"); // sl = second player has left
-                write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
-                game_finished = true;
+                if (!start)
+                {
+                    printf("Game ID: %d\tPlayer 1 has left\n", game_id);
+                    strcpy(massage_to_player_2, "sl"); // sl = second player has left
+                    write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+                    game_finished = true;
+                }
+                else
+                {
+                    start = false;
+                    printf("Game ID: %d\tPlayer 1 had left before Player 2 joined\n", game_id);
+                    printf("Game ID: %d\tMoving Player 2 to next game as the Player 1\n", game_id);
+                    strcpy(massage_to_player_2, "le"); // le = (second) player left early
+                    write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+                    game_finished = true;
+                }
+                
             }
             else
             {
