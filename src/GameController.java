@@ -51,12 +51,12 @@ public class GameController implements Initializable {
         Button button;
         String message_from_server = Main.readFromServer();
         if (message_from_server.equals("sl")) {
+            game_finished = true;
             Platform.runLater( () -> {
                 changeAbility(false);
-                whoseTurn.setText("Opponent has left!");
+                whoseTurn.setText("You have won by walkover!");
                 whoseTurn.setTextFill(Color.web("#1A3A70"));
             });
-
         }
         else {
             String checkState = Main.readFromServer();
@@ -166,9 +166,21 @@ public class GameController implements Initializable {
     }
 
     public void exit(ActionEvent actionEvent) throws IOException {
-        if (my_turn) {
+        if (my_turn || game_finished) {
             Main.window.close();
             Main.closeConnection();
+        }
+        else {
+            Main.window.close();
+            new Thread(()->{
+                try {
+                    Main.readFromServer(); // simulate waiting for opponent's move
+                    Main.readFromServer(); // simulate waiting for new game state
+                    Main.closeConnection(); // now you finally can safely close connection
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
 
     }

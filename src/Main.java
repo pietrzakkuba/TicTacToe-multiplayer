@@ -25,7 +25,6 @@ public class Main extends Application {
         window = primaryStage;
         primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
         primaryStage.setTitle("TicTacToe - Login");
-        primaryStage.setResizable(false);
         primaryStage.show();
     }
     public static void main(String[] args) {
