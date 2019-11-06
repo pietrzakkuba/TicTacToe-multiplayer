@@ -71,7 +71,7 @@ public class GameController implements Initializable {
         else {
             if(!draw) {
                 Platform.runLater(() -> {
-                    whoseTurn.setText("Opponent has won!");
+                    whoseTurn.setText("You have lost!");
                 });
             }
             else {
@@ -85,27 +85,6 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        new Thread( ()->{
-//            try {
-//                String msg = Main.readFromServerSupport();
-//                if (msg.equals("15")) {
-//                    System.out.println("I LOST");
-//                }
-//                else if (msg.equals("16")) {
-//                   // game_finished = true;
-//                    System.out.println("I WON");
-//                    //Platform.runLater(() -> {
-//                      //  changeAbility(false);
-//                      //  whoseTurn.setText("You won by walkover!");
-//                    // whoseTurn.setTextFill(Color.web("#106310"));
-//                    //});
-//
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
-
         new Thread( ()->{
             try {
                 if (myTurn()) {
@@ -175,10 +154,7 @@ public class GameController implements Initializable {
     }
 
     public void exit(ActionEvent actionEvent) throws IOException {
-        if(!game_finished) {
-            Main.writeToServerSupport("14\0");
-        }
-
-        // Main.window.close();
+         Main.window.close();
+         Main.closeConnection();
     }
 }

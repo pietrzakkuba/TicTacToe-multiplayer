@@ -86,7 +86,7 @@ public class LoginController{
         connect();
     }
 
-    public void exit(ActionEvent actionEvent) {
+    public void exit(ActionEvent actionEvent) throws IOException {
         Main.window.close();
     }
 
