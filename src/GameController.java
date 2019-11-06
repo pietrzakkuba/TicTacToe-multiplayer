@@ -129,6 +129,16 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        new Thread( () -> {
+            Main.window.setOnCloseRequest(e -> {
+                e.consume();
+                try {
+                    close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        }).start();
         new Thread( ()->{
             try {
                 if (myTurn()) {
@@ -197,7 +207,7 @@ public class GameController implements Initializable {
         }).start();
     }
 
-    public void exit(ActionEvent actionEvent) throws IOException {
+    private void close() throws IOException {
         if (my_turn || game_finished) {
             Main.window.close();
             Main.closeConnection();
@@ -214,6 +224,9 @@ public class GameController implements Initializable {
                 }
             }).start();
         }
+    }
 
+    public void exit(ActionEvent actionEvent) throws IOException {
+        close();
     }
 }

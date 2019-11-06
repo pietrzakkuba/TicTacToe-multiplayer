@@ -2,13 +2,16 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class LoginController{
+public class LoginController implements Initializable {
     
     public TextField serverTextField;
     public Button joinButton, exitButton;
@@ -57,5 +60,11 @@ public class LoginController{
     }
 
 
-
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Main.window.setOnCloseRequest(e -> {
+            e.consume();
+            Main.window.close();
+        });
+    }
 }
