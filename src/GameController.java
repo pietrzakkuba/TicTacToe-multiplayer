@@ -18,7 +18,6 @@ public class GameController implements Initializable {
     public GridPane mainGrid;
     public Pane pane;
     private boolean isX, game_finished = false, draw = false;
-    private String[] values = new String[9];
 
 
     private boolean myTurn() throws IOException {
@@ -41,86 +40,6 @@ public class GameController implements Initializable {
         return false;
     }
 
-    private void checkState() {
-        if
-        (
-            values[0].equals(values[1]) &&
-            values[0].equals(values[2]) &&
-            !values[0].equals("")
-        ) {
-            System.out.println("GAME OVER 123");
-            game_finished = true;
-        } else if
-        (
-           values[3].equals(values[4]) &&
-            values[3].equals(values[5]) &&
-            !values[3].equals("")
-        ) {
-            System.out.println("GAME OVER 456");
-            game_finished = true;
-        } else if
-        (
-            values[6].equals(values[7]) &&
-            values[6].equals(values[8]) &&
-            !values[6].equals("")
-        ) {
-            System.out.println("GAME OVER 789");
-            game_finished = true;
-        } else if
-        (
-            values[0].equals(values[3]) &&
-            values[0].equals(values[6]) &&
-            !values[0].equals("")
-        ) {
-            System.out.println("GAME OVER 147");
-            game_finished = true;
-        } else if
-        (
-            values[1].equals(values[4]) &&
-            values[1].equals(values[7]) &&
-            !values[1].equals("")
-        ) {
-            System.out.println("GAME OVER 258");
-            game_finished = true;
-        } else if
-        (
-            values[2].equals(values[5]) &&
-            values[2].equals(values[8]) &&
-            !values[2].equals("")
-        ) {
-            System.out.println("GAME OVER 369");
-            game_finished = true;
-        } else if
-        (
-            values[0].equals(values[4]) &&
-            values[0].equals(values[8]) &&
-            !values[0].equals("")
-        ) {
-            System.out.println("GAME OVER 159");
-            game_finished = true;
-        } else if
-        (
-            values[2].equals(values[4]) &&
-            values[2].equals(values[6]) &&
-            !values[2].equals("")
-        ) {
-            System.out.println("GAME OVER 357");
-            game_finished = true;
-        } else {
-            boolean not_draw_flag = false;
-            for (int i = 0; i < 9; i++) {
-                if(values[i].equals("")) {
-                    not_draw_flag = true;
-                    break;
-                }
-            }
-            if (!not_draw_flag) {
-                System.out.println("DRAW");
-                game_finished = true;
-                draw = true;
-            }
-        }
-    }
 
     private void changeAbility(boolean my_turn) {
         mainGrid.setDisable(!my_turn);
@@ -129,11 +48,19 @@ public class GameController implements Initializable {
     private void waitForMove() throws IOException {
         Button button;
         String message_from_server = Main.readFromServer();
-        game_finished = message_from_server.charAt(0) == '2';
+
+        String checkState = Main.readFromServer();
+
+        if (checkState.equals("XX") || checkState.equals("OO")) {
+            game_finished = true;
+        }
+        if (checkState.equals("dd")) {
+            game_finished = true;
+            draw = true;
+        }
+
         char button_number = message_from_server.charAt(1);
         String button_id = "button" + button_number;
-        values[button_number - '0' - 1] = isX ? "O" : "X";
-        checkState();
         button = (Button)pane.getScene().lookup("#" + button_id);
         Platform.runLater ( () -> {
             button.setDisable(true);
@@ -142,7 +69,6 @@ public class GameController implements Initializable {
         });
         if (!game_finished) changeAbility(myTurn());
         else {
-            Main.writeToServer(message_from_server + '\0');
             if(!draw) {
                 Platform.runLater(() -> {
                     whoseTurn.setText("Opponent has won!");
@@ -159,26 +85,26 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        new Thread( ()->{
-            try {
-                String msg = Main.readFromServerSupport();
-                if (msg.equals("15")) {
-                    System.out.println("I LOST");
-                }
-                else if (msg.equals("16")) {
-                   // game_finished = true;
-                    System.out.println("I WON");
-                    //Platform.runLater(() -> {
-                      //  changeAbility(false);
-                      //  whoseTurn.setText("You won by walkover!");
-                    // whoseTurn.setTextFill(Color.web("#106310"));
-                    //});
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+//        new Thread( ()->{
+//            try {
+//                String msg = Main.readFromServerSupport();
+//                if (msg.equals("15")) {
+//                    System.out.println("I LOST");
+//                }
+//                else if (msg.equals("16")) {
+//                   // game_finished = true;
+//                    System.out.println("I WON");
+//                    //Platform.runLater(() -> {
+//                      //  changeAbility(false);
+//                      //  whoseTurn.setText("You won by walkover!");
+//                    // whoseTurn.setTextFill(Color.web("#106310"));
+//                    //});
+//
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
 
         new Thread( ()->{
             try {
@@ -198,11 +124,6 @@ public class GameController implements Initializable {
                 e.printStackTrace();
             }
         }).start();
-        new Thread( ()->{
-           for(int i=0; i<9; i++){
-               values[i] = "";
-           }
-        }).start();
     }
 
 
@@ -217,12 +138,20 @@ public class GameController implements Initializable {
             });
             String message_to_server = button.getId();
             char button_number = message_to_server.charAt(message_to_server.length() - 1);
-            values[button_number - '0' - 1] = isX ? "X" : "O";
-            checkState();
-            String first_number = !game_finished ? "0" : "2";
-            message_to_server = first_number + button_number + '\0';
+            message_to_server = "0" + button_number + '\0';
             try {
-                Main.writeToServer(message_to_server);
+                Main.writeToServer(message_to_server); //write your move to server
+
+                String checkState = Main.readFromServer(); //check current state of game
+
+                if (checkState.equals("XX") || checkState.equals("OO")) {
+                    game_finished = true;
+                }
+                else if (checkState.equals("dd")) {
+                    game_finished = true;
+                    draw = true;
+                }
+
                 if (!game_finished) {
                     changeAbility(myTurn());
                     waitForMove();

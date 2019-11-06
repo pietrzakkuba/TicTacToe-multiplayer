@@ -13,6 +13,8 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+#include "checkState.h"
+
 struct walkover_thread_args
 {
     int game_id;
@@ -95,66 +97,94 @@ void tournament(int game_id, int player_1, int player_2, int player_1_support, i
     char massage_from_player_2[3];
 
     bool player_1_turn = true;
-    bool game_finished_player_1 = false;
-    bool game_finished_player_2 = false;
+    bool game_finished = false;
 
-    // game loop; server wants confirmation from both players that game is over to stop
-    while (!game_finished_player_1 || !game_finished_player_2)
+    char values[9];
+    char check;
+    char checktoSend[3];
+    for (int i = 0; i < 9; i++)
     {
-        if (player_1_turn)
-        {
-            printf("Game ID: %d\tPlayer's 1 Turn\n", game_id);
-            strcpy(massage_to_player_1, "11");
-            strcpy(massage_to_player_2, "12");
-
-            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
-            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
-
-            // waiting for respond from player 1
-            read(player_1, massage_from_player_1, sizeof(massage_from_player_1));
-
-            // sending the respond to player 2
-            strcpy(massage_to_player_2, massage_from_player_1);
-            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
-            printf("Game ID: %d\tPlayer's 1 Move: %s\n", game_id, massage_from_player_1);
-
-            //checking whether the game is finished
-            if (massage_from_player_1[0] == '2')
-            {
-                game_finished_player_1 = true;
-                printf("Game ID: %d\tPlayer 1 has finished game\n", game_id);
-            }
-
-            player_1_turn = false;
-        }
-        else
-        {
-            printf("Game ID: %d\tPlayer's 2 Turn\n", game_id);
-            strcpy(massage_to_player_1, "12");
-            strcpy(massage_to_player_2, "11");
-
-            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
-            write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
-
-            // waiting for respond from player 2
-            read(player_2, massage_from_player_2, sizeof(massage_from_player_2));
-
-            // sending the respond to player 1
-            strcpy(massage_to_player_1, massage_from_player_2);
-            write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
-            printf("Game ID: %d\tPlayer's 2 Move: %s\n", game_id, massage_from_player_2);
-
-            //checking whether the game is finished
-            if (massage_from_player_2[0] == '2')
-            {
-                game_finished_player_2 = true;
-                printf("Game ID: %d\tPlayer 2 has finished the game\n", game_id);
-            }
-
-            player_1_turn = true;
-        }
+        values[i] = 'e'; // empty
     }
-    printf("Game ID: %d\tGame over\n", game_id);
-    pthread_cancel(walkover_thread[0]);
-    pthread_cancel(walkover_thread[1]);
+        // game loop; server wants confirmation from both players that game is over to stop
+        while (!game_finished)
+        {
+            if (player_1_turn)
+            {
+                printf("Game ID: %d\tPlayer's 1 Turn\n", game_id);
+                strcpy(massage_to_player_1, "11");
+                strcpy(massage_to_player_2, "12");
+
+                write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+                write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+
+                // waiting for respond from player 1
+                read(player_1, massage_from_player_1, sizeof(massage_from_player_1));
+                values[atoi(massage_from_player_1) - 1] = 'X';
+
+
+                    //checking state of the game and sending them to a client
+                check = checkState(values);
+                checktoSend[0] = check;
+                checktoSend[1] = check;
+                checktoSend[2] = '\0';
+                write(player_1, checktoSend, sizeof(checktoSend));
+
+
+                // sending the respond to player 2
+                strcpy(massage_to_player_2, massage_from_player_1);
+                write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+
+                //sending the checkstate to a second client
+                write(player_2, checktoSend, sizeof(checktoSend));
+
+                printf("Game ID: %d\tPlayer's 1 Move: %s\n", game_id, massage_from_player_1);
+
+                player_1_turn = false;
+                if (check == 'd' || check == 'X' || check == 'O')
+                {
+                    game_finished = true;
+                }
+                
+            }
+            else if (!game_finished)
+            {
+                printf("Game ID: %d\tPlayer's 2 Turn\n", game_id);
+                strcpy(massage_to_player_1, "12");
+                strcpy(massage_to_player_2, "11");
+
+                write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+                write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
+
+                // waiting for respond from player 2
+                read(player_2, massage_from_player_2, sizeof(massage_from_player_2));
+                
+                values[atoi(massage_from_player_2) - 1] = 'O';
+
+                //checking state of the game and sending them to a client
+                check = checkState(values);
+                checktoSend[0] = check;
+                checktoSend[1] = check;
+                checktoSend[2] = '\0';
+                write(player_2, checktoSend, sizeof(checktoSend));
+
+                // sending the respond to player 1
+                strcpy(massage_to_player_1, massage_from_player_2);
+                write(player_1, massage_to_player_1, sizeof(massage_to_player_1));
+
+                //sending the checkstate to a second client
+                write(player_1, checktoSend, sizeof(checktoSend));
+
+                printf("Game ID: %d\tPlayer's 2 Move: %s\n", game_id, massage_from_player_2);
+
+                player_1_turn = true;
+                if (check == 'd' || check == 'X' || check == 'O')
+                {
+                    game_finished = true;
+                }
+            }
+        }
+        printf("Game ID: %d\tGame over\n", game_id);
+        pthread_cancel(walkover_thread[0]);
+        pthread_cancel(walkover_thread[1]);
 }
