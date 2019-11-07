@@ -19,6 +19,7 @@ public class GameController implements Initializable {
     public Label LabelYou, LabelOpponent, whoseTurn;
     public GridPane mainGrid;
     public Pane pane;
+    public Button relogin;
     private boolean isX, game_finished = false, draw = false, my_turn;
 
 
@@ -102,28 +103,31 @@ public class GameController implements Initializable {
                 game_finished = true;
                 draw = true;
             }
-            char button_number = message_from_server.charAt(1);
-            String button_id = "button" + button_number;
-            button = (Button)pane.getScene().lookup("#" + button_id);
-            Platform.runLater ( () -> {
-                button.setDisable(true);
-                button.setText(isX ? "O" : "X");
-                button.getStyleClass().add("not_my_buttons");
-            });
-            if (!game_finished) changeAbility(myTurn());
-            else {
-                if(!draw) {
-                    Platform.runLater(() -> {
-                        whoseTurn.setText("You have lost!");
-                    });
-                }
+            if (message_from_server.length() == 2) {
+                char button_number = message_from_server.charAt(1);
+                String button_id = "button" + button_number;
+                button = (Button)pane.getScene().lookup("#" + button_id);
+                Platform.runLater ( () -> {
+                    button.setDisable(true);
+                    button.setText(isX ? "O" : "X");
+                    button.getStyleClass().add("not_my_buttons");
+                });
+                if (!game_finished) changeAbility(myTurn());
                 else {
-                    Platform.runLater(() -> {
-                        whoseTurn.setText("Draw!");
-                        whoseTurn.setTextFill(Color.web("#1A3A70"));
-                    });
+                    if(!draw) {
+                        Platform.runLater(() -> {
+                            whoseTurn.setText("You have lost!");
+                        });
+                    }
+                    else {
+                        Platform.runLater(() -> {
+                            whoseTurn.setText("Draw!");
+                            whoseTurn.setTextFill(Color.web("#1A3A70"));
+                        });
+                    }
                 }
             }
+
         }
     }
 
@@ -142,13 +146,18 @@ public class GameController implements Initializable {
         new Thread( ()->{
             try {
                 if (myTurn()) {
-                    LabelYou.setText("X");
-                    LabelOpponent.setText("O");
+                    Platform.runLater( () -> {
+                        LabelYou.setText("X");
+                        LabelOpponent.setText("O");
+                    });
+
                     isX = true;
                 } else {
-                    LabelYou.setText("O");
-                    LabelOpponent.setText("X");
-                    changeAbility(false);
+                    Platform.runLater( () -> {
+                        LabelYou.setText("O");
+                        LabelOpponent.setText("X");
+                        changeAbility(false);
+                    });
                     isX = false;
                     waitForMove();
 
@@ -217,7 +226,6 @@ public class GameController implements Initializable {
             new Thread(()->{
                 try {
                     Main.readFromServer(); // simulate waiting for opponent's move
-                    Main.readFromServer(); // simulate waiting for new game state
                     Main.closeConnection(); // now you finally can safely close connection
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -228,5 +236,37 @@ public class GameController implements Initializable {
 
     public void exit(ActionEvent actionEvent) throws IOException {
         close();
+    }
+
+    public void reLogin(ActionEvent actionEvent) throws IOException {
+        if (my_turn || game_finished) {
+            Main.closeConnection();
+                Platform.runLater( () -> {
+                    try {
+                        Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+        }
+        else {
+            new Thread(()->{
+                try {
+                    Main.readFromServer(); // simulate waiting for opponent's move
+                    Main.readFromServer(); // simulate waiting for new game state
+                    Main.closeConnection(); // now you finally can safely close connection
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            Platform.runLater( () -> {
+                try {
+                    Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 }

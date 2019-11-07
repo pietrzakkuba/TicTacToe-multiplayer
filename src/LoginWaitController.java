@@ -1,6 +1,9 @@
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
@@ -13,17 +16,14 @@ public class LoginWaitController implements Initializable {
     public Button boredButton;
     public Label waitLabel;
     public Button exitButton;
+    public Button relogin;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         new Thread( ()->{
-            Main.window.setOnCloseRequest(e -> {
-                e.consume();
-                close();
-            });
+            Main.window.setOnCloseRequest(Event::consume);
         }).start();
     }
-
 
     public void clientIsBored(ActionEvent actionEvent) {
         new Thread(() -> {
@@ -35,22 +35,5 @@ public class LoginWaitController implements Initializable {
                 waitLabel.setStyle("-fx-text-fill: " + String.format("#%06x", rand_num4) + ";");
             });
         }).start();
-    }
-
-    private void close() {
-        new Thread(() -> {
-            try {
-                Main.readFromServer(); // simulate turn
-                Main.closeConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        Main.window.close();
-    }
-
-
-    public void exit(ActionEvent actionEvent) throws IOException {
-        close();
     }
 }

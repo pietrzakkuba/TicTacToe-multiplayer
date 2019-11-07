@@ -44,6 +44,7 @@ void tournament(int game_id, int player_1, int player_2)
 
     int read_result;
 
+    //first move flag
     bool start = true;
 
     // game loop
@@ -71,14 +72,12 @@ void tournament(int game_id, int player_1, int player_2)
                 }
                 else
                 {
-                    start = false;
                     printf("Game ID: %d\tPlayer 1 had left before Player 2 joined\n", game_id);
                     printf("Game ID: %d\tMoving Player 2 to next game as the Player 1\n", game_id);
                     strcpy(massage_to_player_2, "le"); // le = (second) player left early
                     write(player_2, massage_to_player_2, sizeof(massage_to_player_2));
                     game_finished = true;
                 }
-                
             }
             else
             {
@@ -105,6 +104,7 @@ void tournament(int game_id, int player_1, int player_2)
                     game_finished = true;
                 }
             }
+            start = false;
         }
         else if (!game_finished)
         {

@@ -56,3 +56,9 @@
 .wait_text {
     -fx-font-size: 1.0em;
 }
+.relogin {
+    -fx-background-color: #AFAF00;
+}
+.relogin:hover {
+    -fx-background-color: #848400;
+}

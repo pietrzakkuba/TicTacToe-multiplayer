@@ -61,5 +61,6 @@
             <Glow level="1.0" />
          </effect>
       </Label>
+      <Button fx:id="relogin" layoutX="261.0" layoutY="504.0" mnemonicParsing="false" onAction="#reLogin" styleClass="relogin" text="Go back to login" />
    </children>
 </Pane>
