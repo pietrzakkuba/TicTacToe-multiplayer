@@ -42,7 +42,6 @@ public class Main extends Application {
         while ((x = input.read()) != 0) {
             msg.append((char) x);
         }
-        System.out.println(msg.toString());
         return msg.toString();
     }
 
