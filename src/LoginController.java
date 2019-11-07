@@ -19,7 +19,7 @@ public class LoginController implements Initializable {
     private void connect() throws IOException {
         adr = serverTextField.getText();
         if (adr.equals("")) {
-            adr ="127.0.0.1"; // deafult address = localhost
+            adr ="127.0.0.1"; // default address = localhost
         }
         Main.connect(adr);
         new Thread( () -> {
