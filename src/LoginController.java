@@ -1,5 +1,4 @@
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,12 +19,13 @@ public class LoginController implements Initializable {
     private void connect() throws IOException {
         adr = serverTextField.getText();
         if (adr.equals("")) {
-            adr ="127.0.0.1";
+            adr ="127.0.0.1"; // deafult address = localhost
         }
         Main.connect(adr);
         new Thread( () -> {
             Platform.runLater ( () -> {
                 try {
+                    // firstly get wait layout
                     Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-wait-layout.fxml"))));
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -38,6 +38,7 @@ public class LoginController implements Initializable {
                 if (msg.equals("sr")) {
                     Platform.runLater ( () -> {
                         try {
+                            // then game layout when second player is ready aswell
                             Main.window.setTitle("TicTacToe - Game");
                             Main.window.setScene(new Scene(FXMLLoader.load(getClass().getResource("game-layout.fxml"))));
                         } catch (IOException e) {

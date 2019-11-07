@@ -1,13 +1,10 @@
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -15,8 +12,6 @@ import java.util.ResourceBundle;
 public class LoginWaitController implements Initializable {
     public Button boredButton;
     public Label waitLabel;
-    public Button exitButton;
-    public Button relogin;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -25,6 +20,7 @@ public class LoginWaitController implements Initializable {
         }).start();
     }
 
+    // void made just for kicks, while waiting player can change layout's colour :)
     public void clientIsBored(ActionEvent actionEvent) {
         new Thread(() -> {
             Random rand = new Random();

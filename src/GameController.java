@@ -22,7 +22,7 @@ public class GameController implements Initializable {
     public Button relogin;
     private boolean isX, game_finished = false, draw = false, my_turn;
 
-
+    // 11 from server -> my Turn, 12 from server -> not my Turn
     private boolean myTurn() throws IOException {
         String turn = Main.readFromServer();
         if (turn.equals("11")) {
@@ -41,15 +41,17 @@ public class GameController implements Initializable {
             });
             return false;
         }
+        // println just in case...
         System.out.println("Something went wrong! " + turn);
         return false;
     }
 
-
+    // enabling / disabling TicTacToe grid so players can make a move only in their turn
     private void changeAbility(boolean my_turn) {
         mainGrid.setDisable(!my_turn);
     }
 
+    // if one player leaves without making any move, other one is automatically joined to a new game
     private void rejoin() throws IOException {
         game_finished = true;
         Main.closeConnection();
@@ -82,9 +84,12 @@ public class GameController implements Initializable {
 
     private void waitForMove() throws IOException {
         Button button;
+        // opponent's move
         String message_from_server = Main.readFromServer();
+        // le -> (opponent) left early -> rejoin to an other game
         if (message_from_server.equals("le")) {
             rejoin();
+        // opponent left during match -> you win by walk-over
         } else if (message_from_server.equals("sl")) {
             game_finished = true;
             Platform.runLater( () -> {
@@ -94,25 +99,32 @@ public class GameController implements Initializable {
             });
         }
         else {
+            // else -> if opponent didn't leave
             String checkState = Main.readFromServer();
-
+            //XX or OO just won, game over
             if (checkState.equals("XX") || checkState.equals("OO")) {
                 game_finished = true;
             }
+            // draw, game over
             if (checkState.equals("dd")) {
                 game_finished = true;
                 draw = true;
             }
+            // checking whether whole msg have arrived
             if (message_from_server.length() == 2) {
+                //getting what move opponent did last turn
                 char button_number = message_from_server.charAt(1);
                 String button_id = "button" + button_number;
                 button = (Button)pane.getScene().lookup("#" + button_id);
+                // disabling and styling that button
                 Platform.runLater ( () -> {
                     button.setDisable(true);
                     button.setText(isX ? "O" : "X");
                     button.getStyleClass().add("not_my_buttons");
                 });
+                // if not game over my turn next
                 if (!game_finished) changeAbility(myTurn());
+                //else manage who won
                 else {
                     if(!draw) {
                         Platform.runLater(() -> {
@@ -127,7 +139,10 @@ public class GameController implements Initializable {
                     }
                 }
             }
-
+            // just in case...
+            else {
+                System.out.println("Something went wrong getting opponent's move!");
+            }
         }
     }
 
@@ -143,6 +158,7 @@ public class GameController implements Initializable {
                 }
             });
         }).start();
+        // setting up who is who
         new Thread( ()->{
             try {
                 if (myTurn()) {
@@ -170,7 +186,7 @@ public class GameController implements Initializable {
 
 
     public void makeMove(ActionEvent actionEvent) throws IOException {
-
+        // style clicked button
         new Thread(()->{
             Button button = (Button)actionEvent.getSource();
             Platform.runLater( () -> {
@@ -181,11 +197,13 @@ public class GameController implements Initializable {
             String message_to_server = button.getId();
             char button_number = message_to_server.charAt(message_to_server.length() - 1);
             message_to_server = "0" + button_number + '\0';
+            // send message to server what you have just clicked
             try {
-                Main.writeToServer(message_to_server); //write your move to server
+                Main.writeToServer(message_to_server); // write your move to server
+            // check state of game
+                String checkState = Main.readFromServer(); // check current state of game
 
-                String checkState = Main.readFromServer(); //check current state of game
-
+                //below here similar stuff as in waitForMove void
                 if (checkState.equals("XX") || checkState.equals("OO")) {
                     game_finished = true;
                 }
@@ -225,7 +243,7 @@ public class GameController implements Initializable {
             Main.window.close();
             new Thread(()->{
                 try {
-                    Main.readFromServer(); // simulate waiting for opponent's move
+                    Main.readFromServer(); // prevents closing connection too fast
                     Main.closeConnection(); // now you finally can safely close connection
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -252,8 +270,8 @@ public class GameController implements Initializable {
         else {
             new Thread(()->{
                 try {
-                    Main.readFromServer(); // simulate waiting for opponent's move
-                    Main.readFromServer(); // simulate waiting for new game state
+                    Main.readFromServer(); // prevents closing connection too fast 1/2
+                    Main.readFromServer(); // prevents closing connection too fast 2/2
                     Main.closeConnection(); // now you finally can safely close connection
                 } catch (IOException e) {
                     e.printStackTrace();

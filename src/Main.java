@@ -10,6 +10,7 @@ import java.net.Socket;
 
 public class Main extends Application {
 
+    // static variables for connection in controllers
     private static Socket clientSocket;
     private static InputStream input;
     private static OutputStream output;
@@ -27,13 +28,14 @@ public class Main extends Application {
         launch(args);
     }
 
-
+    //connecting
     static void connect(String adr) throws IOException {
         clientSocket = new Socket(adr, 1234);
         input = clientSocket.getInputStream();
         output = clientSocket.getOutputStream();
     }
 
+    //reading each byte separately
     static String readFromServer() throws IOException {
         StringBuilder msg = new StringBuilder();
         int x;
