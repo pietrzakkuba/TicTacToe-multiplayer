@@ -1,6 +1,7 @@
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class Main extends Application {
         window = primaryStage;
         primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("login-layout.fxml"))));
         primaryStage.setTitle("TicTacToe - Login");
+        primaryStage.getIcons().add(new Image("icon.png"));
         primaryStage.show();
     }
     public static void main(String[] args) {
